@@ -17,6 +17,7 @@ import { Graficas1Component } from './graficas1/graficas1.component';
 //Temporales
 import { IncrementadorComponent } from '../componets/incrementador/incrementador.component';
 import { GraficoComponent } from '../componets/graficas/grafico.component';
+import { AccountSettingsComponent } from './account-settings/account-settings.component';
 
 @NgModule({
     imports: [
@@ -37,7 +38,8 @@ import { GraficoComponent } from '../componets/graficas/grafico.component';
         Graficas1Component,
         PagesComponent,
         IncrementadorComponent,
-        GraficoComponent
+        GraficoComponent,
+        AccountSettingsComponent
     ],
     providers: [],
 })
