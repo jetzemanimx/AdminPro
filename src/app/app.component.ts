@@ -8,6 +8,7 @@ import { SettingsService } from './services/service.index';
 })
 export class AppComponent {
   title = 'AdminPro';
-
+  
   constructor( public _ajustes: SettingsService){}
 }
+
