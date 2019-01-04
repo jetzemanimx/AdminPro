@@ -3,6 +3,7 @@ import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { FormGroup, NgForm } from '@angular/forms';
 import { UsuarioService } from '../services/service.index';
+import swal from 'sweetalert';
 
 declare function init_plugins();
 declare const gapi: any;
@@ -79,7 +80,8 @@ export class LoginComponent implements OnInit {
         //console.log("Succes: " + JSON.stringify(data));
       },
       (error: any) => {
-        console.log('Error de servidor' + JSON.stringify(error));
+        swal('Error', error.error.Message, 'error');
+        //console.log('Error de servidor' + JSON.stringify(error));
       },
       () => {
         //Escribe Complete

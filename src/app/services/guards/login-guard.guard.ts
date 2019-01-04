@@ -10,10 +10,10 @@ export class LoginGuard implements CanActivate {
 
   canActivate() {
     if (this._usuarioService.isLogged()) {
-      console.log('Logueado');
+      //console.log('Logueado');
       return true;
     } else {
-      console.log('Bloqueado por Guard');
+      //console.log('Bloqueado por Guard');
       this._router.navigate(['/login']);
       return false;
     }

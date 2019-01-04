@@ -6,7 +6,8 @@ export class Usuario {
         public Password: string,
         public Image?: string,
         public Role?: string,
-        public Google?: boolean
+        public Google?: boolean,
+        public _Id?: string
     ) {
         
     }

@@ -5,6 +5,7 @@ import { HttpClient } from '@angular/common/http';
 import { map, filter } from 'rxjs/operators';
 import { Observable } from 'rxjs';
 import { Router } from '@angular/router';
+import { UploadFileService } from '../upload-file/upload-file.service';
 
 @Injectable({
   providedIn: 'root',
@@ -14,9 +15,27 @@ export class UsuarioService {
   usuario: Usuario;
   token: string;
 
-  constructor(public _http: HttpClient, public _router : Router) {
+  constructor(public _http: HttpClient, public _router : Router, public _subirArchivoService: UploadFileService) {
     //console.log("Service User Ready");
     this.cargarStorage();
+  }
+
+
+  cambiarImagen(archivo : File, id: string){
+
+    let url = '/Api/Upload/Usuarios/'+ id;
+    const formData: FormData = new FormData();
+    formData.append('Image', archivo, archivo.name);
+
+    return this._http.put(url, formData)
+    .pipe(
+      map((Data : any) => {
+      //Mensaje Exito
+      this.usuario.Image = Data.Usuario.Image;
+      this.saveStorage(id, this.token, this.usuario);
+      swal('Exito', 'Se actualizo correctamente la imagen del usuario', 'success');
+      return Data;
+    }));
   }
 
   logout(){
@@ -29,7 +48,9 @@ export class UsuarioService {
   }
 
   crearUsuario(usuario: Usuario) {
-    let url = URL_SERVICIOS + '/Api/Users/Insert';
+    // let url = URL_SERVICIOS + '/Api/Users/Insert';
+
+    let url = '/Api/Users/Insert';
 
     return this._http.post(url, usuario).pipe(
       map((Data: any) => {
@@ -43,6 +64,7 @@ export class UsuarioService {
   }
 
   saveStorage(_id: string, JWT: string, usuario: Usuario) {
+    //console.log("Save Storage: " + JSON.stringify(usuario));
     localStorage.setItem('_Id', _id);
     localStorage.setItem('AppToken', JWT);
     localStorage.setItem('User', JSON.stringify(usuario));
@@ -63,7 +85,8 @@ export class UsuarioService {
   }
 
   loginGoogle(tokenGoogle) {
-    let url = URL_SERVICIOS + '/Api/Login/Google';
+    // let url = URL_SERVICIOS + '/Api/Login/Google';
+    let url = '/Api/Login/Google';
 
     return this._http.post(url, { idToken: tokenGoogle }).pipe(
       map((Data: any) => {
@@ -74,12 +97,45 @@ export class UsuarioService {
           Data.personalData.Email,
           Data.personalData.Password,
           Data.personalData.Image,
-          Data.Role
+          Data.Role,
+          Data.Google,
+          Data._id
         );
         this.saveStorage(Data._id, Data.JWT, usuarioGoogle);
         return true;
       })
     );
+  }
+
+  editarUsuario(usuario : Usuario){
+    let url = '/Api/Users/Update/' + usuario._Id;
+    url += '?Token=' + this.token;    
+
+    return this._http.patch(url, usuario)
+    .pipe(
+      map((Data : any) => {
+      //Mensaje Exito
+      //console.log("MAP EDitar Usuario: " + JSON.stringify(Data));
+      
+      let usuario = new Usuario(
+        Data.personalData.Name,
+        Data.personalData.lastName,
+        Data.personalData.Email,
+        Data.personalData.Password,
+        Data.personalData.Image,
+        Data.Role,
+        Data.Google,
+        Data._id
+      );
+      this.saveStorage(Data._id, this.token, usuario);
+      swal('Exito', 'Usuario actualizado correctamente', 'success');
+      // localStorage.setItem('_Id', Data._id);
+      // localStorage.setItem('AppToken', Data.JWT);
+      // localStorage.setItem('User', JSON.stringify(Data.personalData));
+      return true;        
+    }));
+
+
   }
 
   login(usuario: Usuario, recordar: boolean = false) {
@@ -89,7 +145,8 @@ export class UsuarioService {
       localStorage.removeItem('RememberEmail');
     }
 
-    let url = URL_SERVICIOS + '/Api/Login';
+    // let url = URL_SERVICIOS + '/Api/Login';
+    let url = '/Api/Login';
 
     return this._http.post(url, usuario).pipe(
       // filter((Data : any) => {
@@ -105,7 +162,9 @@ export class UsuarioService {
           Data.personalData.Email,
           Data.personalData.Password,
           Data.personalData.Image,
-          Data.Role
+          Data.Role,
+          Data.Google,
+          Data._id
         );
         this.saveStorage(Data._id, Data.JWT, usuario);
         // localStorage.setItem('_Id', Data._id);
