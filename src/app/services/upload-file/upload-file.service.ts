@@ -8,24 +8,21 @@ import { map } from 'rxjs/operators';
 })
 export class UploadFileService {
 
-  constructor() { }
+  constructor(public _http: HttpClient) { }
 
-  // uploadFile(archivo: File, imagenTipo: string, id: string){
+  uploadFile(archivo: File, imagenTipo: string, id: string){    
+    let url = '/Api/Upload/'+ imagenTipo +'/'+ id;
+    const formData: FormData = new FormData();
+    formData.append('Image', archivo, archivo.name);
 
-  //   //console.log(archivo.name);
+    //console.log(formData.getAll('Imagen'));
     
-  //   let url = '/Api/Upload/'+ imagenTipo +'/'+ id;
-  //   const formData: FormData = new FormData();
-  //   formData.append('Image', archivo, archivo.name);
-
-  //   //console.log(formData.getAll('Imagen'));
-    
-  //   return this._http.put(url, formData)
-  //   .pipe(
-  //     map((Data : any) => {
-  //     //Mensaje Exito
-  //     //console.log("Succes Upload: " + JSON.stringify(Data));
-  //     return Data;
-  //   }));
-  // }
+    return this._http.put(url, formData)
+    .pipe(
+      map((Data : any) => {
+      //Mensaje Exito
+      //console.log("Succes Upload: " + JSON.stringify(Data));
+      return Data;
+    }));
+  }
 }

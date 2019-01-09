@@ -7,9 +7,13 @@ import { AccountSettingsComponent } from './account-settings/account-settings.co
 import { PromesasComponent } from './promesas/promesas.component';
 import { RxjsComponent } from './rxjs.component';
 
+//Rutas de Perfil
 import { ProfileComponent } from './profile/profile.component';
 
 import { LoginGuard } from '../services/service.index';
+
+//Rutas Mantenimiento
+import { UsuariosComponent } from './usuarios/usuarios.component';
 
 const pagesRoutes: Routes = [
     { 
@@ -23,8 +27,10 @@ const pagesRoutes: Routes = [
             { path: 'promesas', component: PromesasComponent, data : { titulo : "Promesas"} },
             { path: 'rxjs', component: RxjsComponent, data : { titulo : "RXJS"} },
             { path: 'account-settings', component: AccountSettingsComponent, data : { titulo : "Confiuración de Cuenta"} },
-            { path: 'profile', component: ProfileComponent, data : { titulo : "Perfil de usuario"} },
-            { path: '', pathMatch: 'full', redirectTo: '/login' },
+            { path: 'profile', component: ProfileComponent, data : { titulo : "Perfil de Usuario"} },
+            //Mantenimientos
+            { path: 'usuarios', component: UsuariosComponent, data : { titulo : "Mantenimiento de Usuario"} },
+            { path: '', pathMatch: 'full', redirectTo: '/dashboard' },
         ]
     }
 ];

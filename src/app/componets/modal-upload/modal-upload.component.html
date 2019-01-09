@@ -1,0 +1,39 @@
+<!-- Modal -->
+<!-- sample modal content -->
+<div class="animated fadeIn fondo-Negro" [ngClass]="_modalUploadService.oculto">
+  <div id="uploadModal" class="modal" tabindex="-1" role="dialog" style="display: block;">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h4 class="modal-title">Cambio de imagen</h4>
+          <button (click)="cerrarModal()" type="button" class="close">×</button>
+        </div>
+        <div class="modal-body">
+          <div class="form-group row center">
+            <div class="col-lg-4"></div>
+            <div class="col-lg-4">
+              <img
+                class="img-circle"
+                *ngIf="!imagenTmp"
+                [src]="'xxx' | imagen"
+                style="width: 150px; height: 150px;"
+              />
+              <img class="img-circle" *ngIf="imagenTmp" [src]="imagenTmp" style="width: 150px; height: 150px;" />
+            </div>
+            <div class="col-lg-4"></div>
+          </div>
+          <div class="form-group row center">
+            <input class="fileinput-filename" type="file" (change)="uploadImage($event.target.files)" />
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button (click)="cerrarModal()" type="button" class="btn btn-danger">Cerrar</button>
+          <button (click)="changeImage()" [disabled]="!fileToUpload" type="button" class="btn btn-success">
+            Guardar Imagen
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<!-- /.modal -->

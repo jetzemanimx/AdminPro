@@ -6,22 +6,19 @@ import { NgForm } from '@angular/forms';
 @Component({
   selector: 'app-profile',
   templateUrl: './profile.component.html',
-  styles: []
+  styles: [],
 })
 export class ProfileComponent implements OnInit {
-
   fileToUpload: File = null;
-  imagenTmp: string;
-  usuario : Usuario;
-  constructor(public _usuarioService : UsuarioService) { 
+  imagenTmp: string = '';
+  usuario: Usuario;
+  constructor(public _usuarioService: UsuarioService) {
     this.usuario = _usuarioService.usuario;
   }
 
-  ngOnInit() {
-  }
+  ngOnInit() {}
 
-
-  changeImage(){
+  changeImage() {
     this._usuarioService.cambiarImagen(this.fileToUpload, this.usuario._Id).subscribe(
       data => {
         //Escribe Data
@@ -37,29 +34,32 @@ export class ProfileComponent implements OnInit {
     );
   }
 
-  uploadImage(file : any){   
-    if(!file){
+  uploadImage(file: any) {
+    if (!file) {
       this.fileToUpload = null;
       return;
     }
 
-    console.log(file.item(0));
-
-    if(file.item(0).type.indexOf('image') < 0){
+    if (file.item(0).type.indexOf('image') < 0) {
       swal('Solo imagenes', 'El archivo seleccionado no es una imagen', 'error');
       this.fileToUpload = null;
       return;
     }
+
     this.fileToUpload = file.item(0);
 
-    let reader = new FileReader();
-    let urlImagenTMP = reader.readAsDataURL(file.item(0));
+    console.log("Profile Component" + this.imagenTmp);
+    
 
-    reader.onloadend = () => this.imagenTmp = reader.result;
+    if (!this.fileToUpload) {
+      let reader = new FileReader();
+      let urlImagenTMP = reader.readAsDataURL(file.item(0));
+      reader.onloadend = () => (this.imagenTmp = reader.result);
+    }
   }
 
-  editarUsuario(usuario : Usuario){
-    if(!this.usuario.Google){
+  editarUsuario(usuario: Usuario) {
+    if (!this.usuario.Google) {
       this.usuario.Email = usuario.Email;
     }
 
@@ -77,7 +77,5 @@ export class ProfileComponent implements OnInit {
         //Escribe Complete
       }
     );
-
   }
-
 }

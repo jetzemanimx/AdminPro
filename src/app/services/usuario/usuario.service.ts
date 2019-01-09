@@ -11,36 +11,101 @@ import { UploadFileService } from '../upload-file/upload-file.service';
   providedIn: 'root',
 })
 export class UsuarioService {
-
   usuario: Usuario;
   token: string;
 
-  constructor(public _http: HttpClient, public _router : Router, public _subirArchivoService: UploadFileService) {
-    //console.log("Service User Ready");
+  constructor(public _http: HttpClient, public _router: Router, public _subirArchivoService: UploadFileService) {
     this.cargarStorage();
   }
 
+  saveUser(User: any) {
+    let usuario = new Usuario(
+      User.personalData.Name,
+      User.personalData.lastName,
+      User.personalData.Email,
+      User.personalData.Password,
+      User.personalData.Image,
+      User.Role,
+      User.Google,
+      User._id
+    );
 
-  cambiarImagen(archivo : File, id: string){
+    let url = '/Api/Users/Update/' + User._id;
+    url += '?Token=' + this.token;
 
-    let url = '/Api/Upload/Usuarios/'+ id;
+    return this._http.patch(url, usuario).pipe(
+      map((Data: any) => {
+        let usuario = new Usuario(
+          Data.personalData.Name,
+          Data.personalData.lastName,
+          Data.personalData.Email,
+          Data.personalData.Password,
+          Data.personalData.Image,
+          Data.Role,
+          Data.Google,
+          Data._id
+        );
+        this.saveStorage(Data._id, this.token, usuario);
+        swal('Exito', 'Usuario actualizado correctamente', 'success');
+        return true;
+      })
+    );
+  }
+
+  deleteUsuarios(idUser: string) {
+    let url = '/Api/Users/Delete/' + idUser;
+    url += '?Token=' + this.token;
+
+    return this._http.delete(url).pipe(
+      map((Data: any) => {
+        //Mensaje Exito
+        swal('Exito', 'Se elimino correctamente al usuario', 'success');
+        return Data;
+      })
+    );
+  }
+
+  cargarUsuarios(offset: number = 0) {
+    let url = '/Api/Users/All/?Offset=' + offset;
+
+    return this._http.get(url).pipe(
+      map((Data: any) => {
+        //Mensaje Exito
+        return Data;
+      })
+    );
+  }
+
+  searchUsuarios(querySearch: string) {
+    let url = '/Api/Search/Usuarios/' + querySearch;
+
+    return this._http.get(url).pipe(
+      map((Data: any) => {
+        //Mensaje Exito
+        return Data;
+      })
+    );
+  }
+
+  cambiarImagen(archivo: File, id: string) {
+    let url = '/Api/Upload/Usuarios/' + id;
     const formData: FormData = new FormData();
     formData.append('Image', archivo, archivo.name);
 
-    return this._http.put(url, formData)
-    .pipe(
-      map((Data : any) => {
-      //Mensaje Exito
-      this.usuario.Image = Data.Usuario.Image;
-      this.saveStorage(id, this.token, this.usuario);
-      swal('Exito', 'Se actualizo correctamente la imagen del usuario', 'success');
-      return Data;
-    }));
+    return this._http.put(url, formData).pipe(
+      map((Data: any) => {
+        //Mensaje Exito
+        this.usuario.Image = Data.Usuario.Image;
+        this.saveStorage(id, this.token, this.usuario);
+        swal('Exito', 'Se actualizo correctamente la imagen del usuario', 'success');
+        return Data;
+      })
+    );
   }
 
-  logout(){
+  logout() {
     this.usuario = null;
-    this.token = "";
+    this.token = '';
     localStorage.removeItem('_Id');
     localStorage.removeItem('AppToken');
     localStorage.removeItem('User');
@@ -48,8 +113,6 @@ export class UsuarioService {
   }
 
   crearUsuario(usuario: Usuario) {
-    // let url = URL_SERVICIOS + '/Api/Users/Insert';
-
     let url = '/Api/Users/Insert';
 
     return this._http.post(url, usuario).pipe(
@@ -59,12 +122,11 @@ export class UsuarioService {
     );
   }
 
-  isLogged(){
-    return (this.token.length > 5) ? true : false;
+  isLogged() {
+    return this.token.length > 5 ? true : false;
   }
 
   saveStorage(_id: string, JWT: string, usuario: Usuario) {
-    //console.log("Save Storage: " + JSON.stringify(usuario));
     localStorage.setItem('_Id', _id);
     localStorage.setItem('AppToken', JWT);
     localStorage.setItem('User', JSON.stringify(usuario));
@@ -73,19 +135,17 @@ export class UsuarioService {
     this.token = JWT;
   }
 
-  cargarStorage(){
-    if(localStorage.getItem("AppToken")){
-      this.token = localStorage.getItem("AppToken");
-      this.usuario = JSON.parse(localStorage.getItem("User"));
-    }
-    else{
-      this.token = "";
+  cargarStorage() {
+    if (localStorage.getItem('AppToken')) {
+      this.token = localStorage.getItem('AppToken');
+      this.usuario = JSON.parse(localStorage.getItem('User'));
+    } else {
+      this.token = '';
       this.usuario = null;
     }
   }
 
   loginGoogle(tokenGoogle) {
-    // let url = URL_SERVICIOS + '/Api/Login/Google';
     let url = '/Api/Login/Google';
 
     return this._http.post(url, { idToken: tokenGoogle }).pipe(
@@ -107,35 +167,28 @@ export class UsuarioService {
     );
   }
 
-  editarUsuario(usuario : Usuario){
+  editarUsuario(usuario: Usuario) {
     let url = '/Api/Users/Update/' + usuario._Id;
-    url += '?Token=' + this.token;    
+    url += '?Token=' + this.token;
 
-    return this._http.patch(url, usuario)
-    .pipe(
-      map((Data : any) => {
-      //Mensaje Exito
-      //console.log("MAP EDitar Usuario: " + JSON.stringify(Data));
-      
-      let usuario = new Usuario(
-        Data.personalData.Name,
-        Data.personalData.lastName,
-        Data.personalData.Email,
-        Data.personalData.Password,
-        Data.personalData.Image,
-        Data.Role,
-        Data.Google,
-        Data._id
-      );
-      this.saveStorage(Data._id, this.token, usuario);
-      swal('Exito', 'Usuario actualizado correctamente', 'success');
-      // localStorage.setItem('_Id', Data._id);
-      // localStorage.setItem('AppToken', Data.JWT);
-      // localStorage.setItem('User', JSON.stringify(Data.personalData));
-      return true;        
-    }));
-
-
+    return this._http.patch(url, usuario).pipe(
+      map((Data: any) => {
+        //Mensaje Exito
+        let usuario = new Usuario(
+          Data.personalData.Name,
+          Data.personalData.lastName,
+          Data.personalData.Email,
+          Data.personalData.Password,
+          Data.personalData.Image,
+          Data.Role,
+          Data.Google,
+          Data._id
+        );
+        this.saveStorage(Data._id, this.token, usuario);
+        swal('Exito', 'Usuario actualizado correctamente', 'success');
+        return true;
+      })
+    );
   }
 
   login(usuario: Usuario, recordar: boolean = false) {
@@ -144,8 +197,6 @@ export class UsuarioService {
     } else {
       localStorage.removeItem('RememberEmail');
     }
-
-    // let url = URL_SERVICIOS + '/Api/Login';
     let url = '/Api/Login';
 
     return this._http.post(url, usuario).pipe(
@@ -167,9 +218,6 @@ export class UsuarioService {
           Data._id
         );
         this.saveStorage(Data._id, Data.JWT, usuario);
-        // localStorage.setItem('_Id', Data._id);
-        // localStorage.setItem('AppToken', Data.JWT);
-        // localStorage.setItem('User', JSON.stringify(Data.personalData));
         return true;
       })
     );
